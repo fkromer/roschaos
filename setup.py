@@ -7,7 +7,7 @@ d = generate_distutils_setup(
     packages=['roschaos'],
     package_dir={'': 'src'},
     scripts=['scripts/roschaos'],
-    requires=['genmsg', 'genpy', 'roslib', 'rospkg', 'rosgraph', 'rosnode']
+    requires=['genmsg', 'genpy', 'roslib', 'rospkg', 'rospy', 'rosgraph', 'rosnode']
 )
 
 setup(**d)
