@@ -49,6 +49,23 @@ Use `roschaos` in another terminal (consider `roschaos -h` for a full command
 Import the class `roschaos.ROSChaosMonkey` into your Python script/library and
 consider `roschaos.roschaos_main` how it can be used.
 
+For a minimal "library mode" example start `roscore` in a terminal and try
+`roschaos` in a separate terminal:
+
+    python
+    >>> import roschaos
+    >>> import os
+    >>> rcm = roschaos.ROSChaosMonkey(os.environ['ROS_MASTER_URI'])
+    >>> rcm.kill_local_node_process_randomly()
+    Local node killed: /rosout
+
+The `/rosout` process has been killed:
+
+    started core service [/rosout]
+    [rosout-1] process has died [pid 6237, exit code -15, cmd /opt/ros/kinetic/lib/rosout/rosout __name:=rosout __log:=/home/florian/.ros/log/7000f9d8-ab50-11e7-86a0-6036dd110fcb/rosout-1.log].
+    log file: /home/florian/.ros/log/7000f9d8-ab50-11e7-86a0-6036dd110fcb/rosout-1*.log
+    [rosout-1] restarting process
+
 ## Development
 
 Add `roschaos` to the PYTHONPATH:
