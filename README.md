@@ -3,8 +3,9 @@ Functionality for process reliability/fault recovery testing in ROS.
 
 ## Installation
 
-    cd <catkin-workspace>
+    cd <catkin-workspace>/src
     git clone https://github.com/fkromer/roschaos.git
+    cd ..
     catkin_make --pkg roschaos
     . devel/setup.bash
 
