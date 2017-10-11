@@ -45,6 +45,34 @@ Use `roschaos` in another terminal (consider `roschaos -h` for a full command
     [INFO] [1507243234.165768]: hello world 1507243234.17
     (process has been killed)
 
+### Node Mode
+
+The ROS node `chaos` can be used with `rosrun`, `roslaunch` launch files or in
+`rostest` tests.
+
+#### Usage in `rosrun`
+
+Start `roscore` and other ROS nodes in separate terminals
+
+    roscore
+
+and execute the `chaos` node in another terminal
+
+    rosrun roschaos chaos _mintd:=1 _maxtd:=3
+
+#### Usage in `roslaunch`
+
+Create a launch file `chaos.launch` with the following content
+
+    <launch>
+      <node name="chaos" pkg="roschaos" type="chaos" output="screen">
+        <param name="mintd" value="1"/>
+        <param name="maxtd" value="3"/>
+      </node>
+    </launch>
+
+and execute it with `roslaunch chaos.launch`.
+
 ### Library Mode
 
 Import the class `roschaos.ROSChaosMonkey` into your Python script/library and

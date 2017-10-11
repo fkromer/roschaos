@@ -1,0 +1,100 @@
+#!/usr/bin/env python
+# Software License Agreement (Apache License 2.0)
+#
+# Copyright 2017 Florian Kromer
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#  * ~/mintd: minimal time delay after chaos is applied
+#  * ~/maxtd: maximal time delay until chaos is applied
+#
+
+from __future__ import print_function
+
+import sys
+
+import rospy
+import os
+from roschaos import ROSChaosMonkey
+import random
+import time
+
+PKG = 'roschaos'
+NAME = 'chaos'
+
+class ChaosMonkeyNode(object):
+    """
+    Fake node which does nothing but creating chaos.
+    """
+    def __init__(self, *args):
+        rospy.init_node(NAME, anonymous=True)
+        self._get_parameters()
+        self._create_monkey()
+
+    def execute(self):
+        """
+        Chaos fake nodes execution.
+        """
+        self._create_chaos(self.mintd, self.maxtd)
+
+    def _get_parameters(self):
+        """
+        Get configuration parameters for chaos from the command line interface,
+        the .launch or .test file.
+        """
+        try:
+            self.mintd = rospy.get_param('~mintd')
+            self.maxtd = rospy.get_param('~maxtd')
+            rospy.loginfo('parameters assigned')
+            rospy.loginfo('mintd: ' + str(self.mintd))
+            rospy.loginfo('maxtd: ' + str(self.maxtd))
+        except KeyError as e:
+            rospy.logerr('chaosmonkey not parametrized properly.')
+
+    def _create_monkey(self):
+        """
+        Create an instance of the roschaos.ROSChaosMonkey().
+        """
+        try:
+            self.rcm = ROSChaosMonkey(os.environ['ROS_MASTER_URI'])
+        except socket.error:
+            sys.stderr.write("Network communication failed. Most likely failed to \
+                communicate with master.\n")
+            sys.exit(1)
+        except rosgraph.MasterException as e:
+            # mainly for invalid master URI/rosgraph.masterapi
+            sys.stderr.write("ERROR: %s\n"%str(e))
+            sys.exit(1)
+        except KeyboardInterrupt: pass
+        except rospy.ROSInterruptException: pass
+
+    def _create_chaos(self, mintd, maxtd):
+        """
+        Apply chaos to the ROS network.
+
+        :params mintd: minimal time delay before chaos is applied
+        :type mintd: integer
+        :params maxtd: maximal time delay after chaos has been applied
+        :type maxtd: integer
+        """
+        chaos_delay = random.randint(mintd, maxtd)
+        rospy.loginfo('Create chaos after time delay: ' + str(chaos_delay))
+        time.sleep(chaos_delay)
+        self.rcm.kill_local_node_process_randomly()
+        rospy.loginfo('Chaos created.')
+
+if __name__ == '__main__':
+    try:
+        cmn = ChaosMonkeyNode(sys.argv[1], sys.argv[2])
+        cmn.execute()
+    except rospy.ROSInterruptException: pass

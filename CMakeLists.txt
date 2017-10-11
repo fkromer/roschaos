@@ -156,7 +156,7 @@ catkin_package(
 # See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
 
 ## install main script
-catkin_install_python(PROGRAMS scripts/roschaos
+catkin_install_python(PROGRAMS scripts/roschaos nodes/chaos
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 ## Mark executable scripts (Python etc.) for installation
