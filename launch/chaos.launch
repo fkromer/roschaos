@@ -1,0 +1,6 @@
+<launch>
+   <node name="chaos" pkg="roschaos" type="chaos" output="screen">
+     <param name="mintd" value="1"/>
+     <param name="maxtd" value="3"/>
+   </node>
+</launch>
