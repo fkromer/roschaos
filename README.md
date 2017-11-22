@@ -107,11 +107,31 @@ Start `roscore`, `talker.py` and `listener.py` in separate terminals:
 
     cd test
     ./talker.py
+    (or: rosrun rospy talker.py)
 
     cd test
     ./listener.py
+    (or: rosrun rospy listener.py)
 
 Execute `roschaos`:
 
     cd scripts
     ./roschaos.py
+
+### Setup for remote machine setup testing
+
+install ssh-server
+
+    sudo apt-get install openssh-server
+
+check server is running
+
+    sudo service ssh status
+
+install ssh-client (usually preinstalled)
+
+    sudo apt-get install openssh-client
+
+log into server from same machine:
+
+    ssh <user>@<host>

@@ -27,6 +27,7 @@ import socket
 import time
 import random
 import logging
+from pexpect import pxssh
 
 try:
     from xmlrpc.client import ServerProxy
@@ -46,8 +47,11 @@ class ROSChaosMonkey(object):
     """
     ROSChaosMonkey creates chaos in ROS nodes randomly.
     """
-    def __init__(self, ros_master_uri):
+    def __init__(self, ros_master_uri, host=None, username=None, password=None):
         self.ros_master_uri = ros_master_uri
+        self.host = host
+        self.username = username
+        self.password = password
         self.master = None
         self._discover_ros_master()
         self.discover_ros_nodes()
@@ -69,6 +73,27 @@ class ROSChaosMonkey(object):
             self.nodes[node_name] = {}
             self.nodes[node_name]['uri'] = node_api
             self.nodes[node_name]['pid'] = pid
+
+    def discover_remote_nodes(self):
+        if (self.host == None) or (self.username == None):  # or (self.password == None):
+            ROSChaosException("Discovering remote nodes requires ssh info (host, username).")
+        self.remote_nodes = {}
+
+        try:
+            list_command = 'rosnode list'
+            ssh_session = pxssh.pxssh()
+            if self.password == None:
+                ssh_session.login(self.host, self.username)
+            else:
+                ssh_session.login(self.host, self.username, self.password)
+            ssh_session.sendline(list_command)
+            #ssh_session.expect('/rosout', timeout=1)
+            ssh_session.prompt()
+            std_out = ssh_session.before
+            ssh_session.logout()
+        except pxssh.ExceptionPxssh as e:
+            ROSChaosException("ssh access to get remote nodes failed.")
+        print(std_out)
 
     def kill_local_node_process_randomly(self):
         node_name = random.choice(self.nodes.keys())
